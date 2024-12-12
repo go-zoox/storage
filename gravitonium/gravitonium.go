@@ -1,6 +1,8 @@
 package gravitonium
 
 import (
+	"time"
+
 	"github.com/go-zoox/fetch"
 	"github.com/go-zoox/storage"
 )
@@ -68,4 +70,11 @@ func (g *Gravitonium) setup() error {
 
 	g.accessToken = response.Get("result.access_token").String()
 	return nil
+}
+
+func (g *Gravitonium) reauthenticate() error {
+	// fmt.Println("[gravitonium.reauthenticate] reauthenticate")
+	time.Sleep(3 * time.Second)
+	g.accessToken = ""
+	return g.setup()
 }

@@ -24,6 +24,16 @@ func (g *Gravitonium) Get(path string) (io.ReadCloser, error) {
 		return nil, err
 	}
 
+	if !response.Ok() {
+		if response.Status == 401 || response.Status == 403 {
+			g.reauthenticate()
+
+			return g.Get(path)
+		}
+
+		return nil, response.Error()
+	}
+
 	// fmt.PrintJSON("[gravitonium.Get] request2:", response.Request)
 
 	return response.Stream, nil

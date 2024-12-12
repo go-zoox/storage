@@ -32,6 +32,12 @@ func (g *Gravitonium) Create(path string, stream io.ReadCloser) error {
 	}
 
 	if !response.Ok() {
+		if response.Status == 401 || response.Status == 403 {
+			g.reauthenticate()
+
+			return g.Create(path, stream)
+		}
+
 		return response.Error()
 	}
 
