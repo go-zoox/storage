@@ -6,7 +6,7 @@ import (
 )
 
 func (g *Gravitonium) List(path string, page, pageSize int) []storage.StorageEntity {
-	g.setup()
+	g.checkAuth()
 
 	fileptah := g.getFilePath(path)
 	url := g.getAPIURL(APIs.List) + "/" + fileptah

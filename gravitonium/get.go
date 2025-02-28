@@ -7,7 +7,7 @@ import (
 )
 
 func (g *Gravitonium) Get(path string) (io.ReadCloser, error) {
-	g.setup()
+	g.checkAuth()
 
 	fileptah := g.getFilePath(path)
 	url := g.getAPIURL(APIs.File) + "/" + fileptah

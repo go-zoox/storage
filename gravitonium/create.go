@@ -7,7 +7,11 @@ import (
 )
 
 func (g *Gravitonium) Create(path string, stream io.ReadCloser) error {
-	g.setup()
+	// // @TODO force reauthenticate to avoid stream has been read
+	// //
+	// g.accessToken = ""
+
+	g.checkAuth()
 
 	if stream == nil {
 		panic("[gravitonium.create] stream is nil")
