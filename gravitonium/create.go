@@ -3,6 +3,7 @@ package gravitonium
 import (
 	"io"
 
+	"github.com/go-zoox/core-utils/fmt"
 	"github.com/go-zoox/fetch"
 )
 
@@ -14,7 +15,7 @@ func (g *Gravitonium) Create(path string, stream io.ReadCloser) error {
 	g.checkAuth()
 
 	if stream == nil {
-		panic("[gravitonium.create] stream is nil")
+		return fmt.Errorf("[gravitonium.create] stream is nil")
 	}
 
 	// fileptah := g.getFilePath(path)

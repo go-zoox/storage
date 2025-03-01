@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-zoox/fetch"
-	"github.com/go-zoox/jwt"
 	"github.com/go-zoox/storage"
 )
 
@@ -47,22 +46,16 @@ func New(clientID string, clientSecret string, Bucket string) storage.Storage {
 	}
 }
 
+func (g *Gravitonium) isAccessTokenValid() bool {
+	return IsAccessTokenValid(g.accessToken)
+}
+
 func (g *Gravitonium) checkAuth() error {
 	g.authLock.Lock()
 	defer g.authLock.Unlock()
 
-	// no accessToken
-	if g.accessToken != "" {
+	if g.isAccessTokenValid() {
 		return nil
-	}
-
-	// @TODO check jwt expired
-	_, payload, _, _, _, err := jwt.Parse(g.accessToken)
-	if err == nil {
-		expiredAt := payload.Get("exp").Int64()
-		if expiredAt > time.Now().Unix() {
-			return nil
-		}
 	}
 
 	url := g.getAPIURL(APIs.Token)
