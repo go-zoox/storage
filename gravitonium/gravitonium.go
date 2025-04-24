@@ -36,13 +36,29 @@ type Gravitonium struct {
 	accessToken string
 	//
 	authLock sync.Mutex
+	//
+	cfg *Config
 }
 
-func New(clientID string, clientSecret string, Bucket string) storage.Storage {
+type Config struct {
+	//
+	Server string
+}
+
+func New(clientID string, clientSecret string, Bucket string, opts ...func(cfg *Config)) storage.Storage {
+	cfg := &Config{
+		Server: HOST,
+	}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
 	return &Gravitonium{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
 		Bucket:       Bucket,
+		//
+		cfg: cfg,
 	}
 }
 

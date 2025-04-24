@@ -8,7 +8,7 @@ import (
 )
 
 func (g *Gravitonium) getAPIURL(path string) string {
-	return HOST + path
+	return g.cfg.Server + path
 }
 
 func (g *Gravitonium) getFilePath(filepath string) string {
