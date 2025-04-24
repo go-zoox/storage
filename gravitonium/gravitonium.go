@@ -1,6 +1,7 @@
 package gravitonium
 
 import (
+	"os"
 	"sync"
 	"time"
 
@@ -9,6 +10,11 @@ import (
 )
 
 const HOST = "https://gcdn.zcorky.com"
+
+const ENV_GRAVITONIUM_CLIENT_ID_KEY = "GRAVITONIUM_CLIENT_ID"
+const ENV_GRAVITONIUM_CLIENT_SECRET_KEY = "GRAVITONIUM_CLIENT_SECRET"
+const ENV_GRAVITONIUM_BUCKET_KEY = "GRAVITONIUM_BUCKET"
+const ENV_GRAVITONIUM_SERVER_KEY = "GRAVITONIUM_SERVER"
 
 var APIs = struct {
 	Token  string
@@ -29,9 +35,6 @@ var APIs = struct {
 }
 
 type Gravitonium struct {
-	ClientID     string
-	ClientSecret string
-	Bucket       string
 	//
 	accessToken string
 	//
@@ -41,6 +44,9 @@ type Gravitonium struct {
 }
 
 type Config struct {
+	ClientID     string
+	ClientSecret string
+	Bucket       string
 	//
 	Server string
 }
@@ -48,15 +54,16 @@ type Config struct {
 func New(clientID string, clientSecret string, Bucket string, opts ...func(cfg *Config)) storage.Storage {
 	cfg := &Config{
 		Server: HOST,
+		//
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Bucket:       Bucket,
 	}
 	for _, opt := range opts {
 		opt(cfg)
 	}
 
 	return &Gravitonium{
-		ClientID:     clientID,
-		ClientSecret: clientSecret,
-		Bucket:       Bucket,
 		//
 		cfg: cfg,
 	}
@@ -66,6 +73,27 @@ func New(clientID string, clientSecret string, Bucket string, opts ...func(cfg *
 func WithServer(server string) func(cfg *Config) {
 	return func(cfg *Config) {
 		cfg.Server = server
+	}
+}
+
+// WithEnv ...
+func WithEnv() func(cfg *Config) {
+	return func(cfg *Config) {
+		if v := os.Getenv(ENV_GRAVITONIUM_SERVER_KEY); v != "" {
+			cfg.Server = v
+		}
+
+		if v := os.Getenv(ENV_GRAVITONIUM_CLIENT_ID_KEY); v != "" {
+			cfg.ClientID = v
+		}
+
+		if v := os.Getenv(ENV_GRAVITONIUM_CLIENT_SECRET_KEY); v != "" {
+			cfg.ClientSecret = v
+		}
+
+		if v := os.Getenv(ENV_GRAVITONIUM_BUCKET_KEY); v != "" {
+			cfg.Bucket = v
+		}
 	}
 }
 
@@ -87,8 +115,8 @@ func (g *Gravitonium) checkAuth() error {
 			"Content-Type": "application/json",
 		},
 		Body: map[string]string{
-			"appId":     g.ClientID,
-			"appSecret": g.ClientSecret,
+			"appId":     g.cfg.ClientID,
+			"appSecret": g.cfg.ClientSecret,
 		},
 	})
 	if err != nil {
