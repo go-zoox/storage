@@ -62,6 +62,13 @@ func New(clientID string, clientSecret string, Bucket string, opts ...func(cfg *
 	}
 }
 
+// WithServer ...
+func WithServer(server string) func(cfg *Config) {
+	return func(cfg *Config) {
+		cfg.Server = server
+	}
+}
+
 func (g *Gravitonium) isAccessTokenValid() bool {
 	return IsAccessTokenValid(g.accessToken)
 }
